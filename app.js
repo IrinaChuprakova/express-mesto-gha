@@ -16,4 +16,6 @@ app.use((req, res, next) => {
 app.use('/', require('./routes/users'));
 app.use('/', require('./routes/cards'));
 
+app.use('/*', (req, res) => { res.send({ message: 'Произошла ошибка' }); });
+
 app.listen(PORT);

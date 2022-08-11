@@ -1,3 +1,4 @@
+const { ObjectId } = require('mongoose').Types;
 const User = require('../models/user');
 
 const getUsers = (req, res) => {
@@ -11,6 +12,10 @@ const getUsers = (req, res) => {
 };
 
 const getUserId = (req, res) => {
+  if (!(ObjectId.isValid(req.params.cardId) && (String)(new ObjectId(req.params.cardId)) === req.params.cardId)) {
+    res.status(400).send({ message: 'Переданы некорректные данные пользователя' });
+    return;
+  }
   User.findById(req.params.userId)
     .then((user) => {
       if (user === null) {
@@ -56,7 +61,7 @@ const updateAvatar = (req, res) => {
   }
   User.findByIdAndUpdate(
     req.user._id,
-    { name: req.body.name, about: req.body.about },
+    { avatar: req.body.avatar },
     { new: true, runValidators: true },
   )
     .then((avatar) => {
