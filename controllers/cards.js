@@ -10,13 +10,13 @@ const getCards = (req, res) => {
 const createCard = (req, res) => {
   const owner = req.user._id;
   const { name, link } = req.body;
-  if (name === undefined || link === undefined) {
-    res.status(400).send({ message: 'Переданы некорректные данные при создании карточки' });
-    return;
-  }
   Card.create({ name, link, owner })
     .then((card) => res.status(200).send(card))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(400).send({ message: 'Переданы некорректные данные при создании карточки' });
+      } else { res.status(500).send({ message: 'Произошла ошибка' }); }
+    });
 };
 
 const deleteCard = (req, res) => {

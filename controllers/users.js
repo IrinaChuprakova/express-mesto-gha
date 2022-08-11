@@ -3,7 +3,11 @@ const User = require('../models/user');
 const getUsers = (req, res) => {
   User.find({})
     .then((users) => res.status(200).send(users))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(400).send({ message: 'Переданы некорректные данные' });
+      } else { res.status(500).send({ message: 'Произошла ошибка' }); }
+    });
 };
 
 const getUserId = (req, res) => {
@@ -18,13 +22,13 @@ const getUserId = (req, res) => {
 
 const createUser = (req, res) => {
   const { name, about, avatar } = req.body;
-  if (name === undefined || about === undefined || avatar === undefined) {
-    res.status(400).send({ message: 'Переданы некорректные данные при создании пользователя' });
-    return;
-  }
   User.create({ name, about, avatar })
     .then((user) => res.status(200).send(user))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(400).send({ message: 'Переданы некорректные данные при создании пользователя' });
+      } else { res.status(500).send({ message: 'Произошла ошибка' }); }
+    });
 };
 
 const updateProfile = (req, res) => {
@@ -32,7 +36,11 @@ const updateProfile = (req, res) => {
     res.status(400).send({ message: ' Переданы некорректные данные при обновлении профиля' });
     return;
   }
-  User.findByIdAndUpdate(req.user._id, { name: req.body.name, about: req.body.about })
+  User.findByIdAndUpdate(
+    req.user._id,
+    { name: req.body.name, about: req.body.about },
+    { new: true, runValidators: true },
+  )
     .then((user) => {
       if (user === null) {
         res.status(404).send({ message: 'Пользователь с указанным id не найден' });
@@ -46,7 +54,11 @@ const updateAvatar = (req, res) => {
     res.status(400).send({ message: 'Переданы некорректные данные для удаления карточки' });
     return;
   }
-  User.findByIdAndUpdate(req.user._id, { avatar: req.body.avatar })
+  User.findByIdAndUpdate(
+    req.user._id,
+    { name: req.body.name, about: req.body.about },
+    { new: true, runValidators: true },
+  )
     .then((avatar) => {
       if (avatar === null) {
         res.status(404).send({ message: 'Пользователь с указанным id не найден' });
