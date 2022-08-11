@@ -1,14 +1,9 @@
-const { ObjectId } = require('mongoose').Types;
 const User = require('../models/user');
 
 const getUsers = (req, res) => {
   User.find({})
     .then((users) => res.status(200).send(users))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Переданы некорректные данные' });
-      } else { res.status(500).send({ message: 'Произошла ошибка' }); }
-    });
+    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
 };
 
 const getUserId = (req, res) => {
@@ -18,11 +13,10 @@ const getUserId = (req, res) => {
         res.status(404).send({ message: 'Запрашиваемый пользователь не найден' });
       } else { res.status(200).send(user); }
     })
-    .catch(() => {
-      if (!(ObjectId.isValid(req.params.cardId) && (String)(new ObjectId(req.params.cardId)) === req.params.cardId)) {
+    .catch((err) => {
+      if (err.name === 'CastError') {
         res.status(400).send({ message: 'Переданы некорректные данные пользователя' });
-        return;
-      } res.status(500).send({ message: 'Произошла ошибка' });
+      } else { res.status(500).send({ message: 'Произошла ошибка' }); }
     });
 };
 
@@ -38,10 +32,6 @@ const createUser = (req, res) => {
 };
 
 const updateProfile = (req, res) => {
-  if (req.body.name === undefined || req.body.about === undefined) {
-    res.status(400).send({ message: ' Переданы некорректные данные при обновлении профиля' });
-    return;
-  }
   User.findByIdAndUpdate(
     req.user._id,
     { name: req.body.name, about: req.body.about },
@@ -52,14 +42,14 @@ const updateProfile = (req, res) => {
         res.status(404).send({ message: 'Пользователь с указанным id не найден' });
       } else { res.status(200).send(user); }
     })
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(400).send({ message: 'Переданы некорректные данные при обновлении профиля' });
+      } else { res.status(500).send({ message: 'Произошла ошибка' }); }
+    });
 };
 
 const updateAvatar = (req, res) => {
-  if (req.body.avatar === undefined) {
-    res.status(400).send({ message: 'Переданы некорректные данные для удаления карточки' });
-    return;
-  }
   User.findByIdAndUpdate(
     req.user._id,
     { avatar: req.body.avatar },
@@ -70,7 +60,11 @@ const updateAvatar = (req, res) => {
         res.status(404).send({ message: 'Пользователь с указанным id не найден' });
       } else { res.status(200).send(avatar); }
     })
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(400).send({ message: 'Переданы некорректные данные при обновлении аватара' });
+      } else { res.status(500).send({ message: 'Произошла ошибка' }); }
+    });
 };
 
 module.exports = {
