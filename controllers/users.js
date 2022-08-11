@@ -12,17 +12,18 @@ const getUsers = (req, res) => {
 };
 
 const getUserId = (req, res) => {
-  if (!(ObjectId.isValid(req.params.cardId) && (String)(new ObjectId(req.params.cardId)) === req.params.cardId)) {
-    res.status(400).send({ message: 'Переданы некорректные данные пользователя' });
-    return;
-  }
   User.findById(req.params.userId)
     .then((user) => {
       if (user === null) {
         res.status(404).send({ message: 'Запрашиваемый пользователь не найден' });
       } else { res.status(200).send(user); }
     })
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch(() => {
+      if (!(ObjectId.isValid(req.params.cardId) && (String)(new ObjectId(req.params.cardId)) === req.params.cardId)) {
+        res.status(400).send({ message: 'Переданы некорректные данные пользователя' });
+        return;
+      } res.status(500).send({ message: 'Произошла ошибка' });
+    });
 };
 
 const createUser = (req, res) => {
