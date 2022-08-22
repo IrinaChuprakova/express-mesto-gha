@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
+const { BadRequest, Unauthorized, Forbidden, NotFoundError, Conflict } = require('../errors/errors');
 
 const login = (req, res) => {
   const { email, password } = req.body;
@@ -15,13 +16,13 @@ const login = (req, res) => {
 const getUsers = (req, res) => {
   User.find({})
     .then((users) => res.status(200).send(users))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch((next));
 };
 
 const getCurrentUser = (req, res) => {
   User.findById(req.user._id)
     .then((user) => res.send({ data: user }))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch((next));
 };
 
 const getUserId = (req, res) => {
