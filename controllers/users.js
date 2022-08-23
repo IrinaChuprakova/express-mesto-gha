@@ -1,9 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
-const {
-  BadRequest, Unauthorized, Forbidden, NotFoundError, Conflict,
-} = require('../errors/errors');
+const { BadRequest, NotFoundError, Conflict } = require('../errors/errors');
 
 const login = (req, res, next) => {
   const { email, password } = req.body;
