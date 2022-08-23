@@ -23,14 +23,14 @@ const getUsers = (req, res, next) => {
 
 const getCurrentUser = (req, res, next) => {
   User.findById(req.user._id)
-    .then((user) => res.send({ data: user }))
+    .then((user) => res.send({ user }))
     .catch((next));
 };
 
 const getUserId = (req, res, next) => {
   User.findById(req.params.userId)
     .orFail(() => { throw new NotFoundError('Запрашиваемый пользователь не найден'); })
-    .then((user) => { res.status(200).send(user); })
+    .then((user) => { res.status(200).send({ user }); })
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequest('Переданы некорректные данные пользователя'));
@@ -48,7 +48,7 @@ const createUser = (req, res, next) => {
     .then((hash) => User.create({
       name, about, avatar, email, password: hash,
     }))
-    .then((user) => res.status(200).send(user))
+    .then((user) => res.status(200).send({ user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequest('Переданы некорректные данные при создании пользователя'));
@@ -69,7 +69,7 @@ const updateProfile = (req, res, next) => {
     { new: true, runValidators: true },
   )
     .orFail(() => { throw new NotFoundError('Пользователь с указанным id не найден'); })
-    .then((user) => { res.status(200).send(user); })
+    .then((user) => { res.status(200).send({ user }); })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequest('Переданы некорректные данные при обновлении профиля'));
@@ -86,7 +86,7 @@ const updateAvatar = (req, res, next) => {
     { new: true, runValidators: true },
   )
     .orFail(() => { throw new NotFoundError('Пользователь с указанным id не найден'); })
-    .then((user) => { res.status(200).send(user); })
+    .then((user) => { res.status(200).send({ user }); })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequest('Переданы некорректные данные при обновлении аватара'));
