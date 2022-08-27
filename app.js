@@ -28,9 +28,9 @@ app.post('/signin', celebrate({
     password: Joi.string().required().min(2),
   }),
 }), login);
-app.use(auth);
-app.use('/', require('./routes/users'));
-app.use('/', require('./routes/cards'));
+
+app.use('/', auth, require('./routes/users'));
+app.use('/', auth, require('./routes/cards'));
 
 app.use('/*', (req, res) => { res.status(404).send({ message: 'Произошла ошибка' }); });
 app.use(errors());

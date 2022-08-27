@@ -8,21 +8,21 @@ const login = (req, res, next) => {
   return User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
-      res.send({ token });
+      res.status(200).send({ token });
     })
     .catch(next);
 };
 
 const getUsers = (req, res, next) => {
   User.find({})
-    .then((users) => res.status(200).send(users))
-    .catch((next));
+    .then((users) => res.status(200).send({ users }))
+    .catch(next);
 };
 
 const getCurrentUser = (req, res, next) => {
   User.findById(req.user._id)
-    .then((user) => res.send({ user }))
-    .catch((next));
+    .then((user) => res.status(200).send({ user }))
+    .catch(next);
 };
 
 const getUserId = (req, res, next) => {
@@ -46,7 +46,13 @@ const createUser = (req, res, next) => {
     .then((hash) => User.create({
       name, about, avatar, email, password: hash,
     }))
-    .then((user) => res.status(200).send({ user }))
+    .then((user) => res.status(200).send({
+      name: user.name,
+      about: user.about,
+      avatar: user.avatar,
+      email: user.email,
+      _id: user._id,
+    }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequest('Переданы некорректные данные при создании пользователя'));
