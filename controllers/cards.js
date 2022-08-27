@@ -3,7 +3,7 @@ const { BadRequest, Forbidden, NotFoundError } = require('../errors/errors');
 
 const getCards = (req, res, next) => {
   Card.find({})
-    .then((card) => res.status(200).send(card))
+    .then((card) => res.status(200).send({ card }))
     .catch((next));
 };
 
@@ -22,7 +22,7 @@ const createCard = (req, res, next) => {
 };
 
 const deleteCard = (req, res, next) => {
-  Card.findByIdAndRemove(req.params.cardId)
+  Card.findById(req.params.cardId)
     .orFail(() => { throw new NotFoundError('Карточка с указанным id не найдена'); })
     .then((card) => {
       if (req.user._id !== card.owner._id) {

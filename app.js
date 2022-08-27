@@ -17,7 +17,7 @@ app.post('/signup', celebrate({
     password: Joi.string().requires().min(2),
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-    avatar: Joi.string().regex(/^http/),
+    avatar: Joi.string().regex(/^(ftp|http|https):\/\/[^ "]+$/),
   }),
 }), createUser);
 app.post('/signin', celebrate({
