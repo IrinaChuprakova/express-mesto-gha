@@ -14,6 +14,13 @@ const login = (req, res, next) => {
           httpOnly: true,
         })
         .status(200)
+        .send({
+          name: user.name,
+          about: user.about,
+          avatar: user.avatar,
+          email: user.email,
+          _id: user._id,
+        })
         .end();
     })
     .catch(next);
