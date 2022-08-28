@@ -11,14 +11,18 @@ const {
 
 router.get('/', getUsers);
 router.get('/me', getCurrentUser);
-router.get('/:userId', getUserId);
+router.get('/:userId', celebrate({
+  params: {
+    userId: Joi.string().hex().length(24),
+  },
+}), getUserId);
 router.patch('/me', celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
   }),
 }), updateProfile);
-router.patch('/avatar', celebrate({
+router.patch('me/avatar', celebrate({
   body: Joi.object().keys({ avatar: Joi.string().required().regex(/^(ftp|http|https):\/\/[^ "]+$/) }),
 }), updateAvatar);
 

@@ -16,7 +16,12 @@ const CardId = celebrate({
 });
 
 router.get('/', getCards);
-router.post('/', createCard);
+router.post('/', celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().required().min(2).max(30),
+    link: Joi.string().required().regex(/^(ftp|http|https):\/\/[^ "]+$/),
+  }),
+}), createCard);
 router.delete('/:cardId', CardId, deleteCard);
 router.put('/:cardId/likes', CardId, cardLike);
 router.delete('/:cardId/likes', CardId, cardLikeDelete);
