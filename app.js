@@ -35,7 +35,7 @@ app.post('/signin', celebrate({
 app.use('/users', auth, require('./routes/users'));
 app.use('/cards', auth, require('./routes/cards'));
 
-app.use('/*', () => { throw new NotFoundError('Произошла ошибка')});
+app.use('/*', () => { throw new NotFoundError('Произошла ошибка'); });
 app.use(errors());
 app.use(error);
 
