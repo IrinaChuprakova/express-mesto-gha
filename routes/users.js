@@ -22,7 +22,7 @@ router.patch('/me', celebrate({
     about: Joi.string().min(2).max(30),
   }),
 }), updateProfile);
-router.patch('me/avatar', celebrate({
+router.patch('/me/avatar', celebrate({
   body: Joi.object().keys({ avatar: Joi.string().required().regex(/^(ftp|http|https):\/\/[^ "]+$/) }),
 }), updateAvatar);
 

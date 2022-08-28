@@ -4,7 +4,7 @@ const { BadRequest, Forbidden, NotFoundError } = require('../errors/errors');
 const getCards = (req, res, next) => {
   Card.find({})
     .then((card) => res.status(200).send({ card }))
-    .catch((next));
+    .catch(next);
 };
 
 const createCard = (req, res, next) => {
