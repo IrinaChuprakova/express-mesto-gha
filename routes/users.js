@@ -9,16 +9,16 @@ const {
   updateAvatar,
 } = require('../controllers/users');
 
-router.get('/users', getUsers);
-router.get('/users/me', getCurrentUser);
-router.get('/users/:userId', getUserId);
-router.patch('/users/me', celebrate({
+router.get('/', getUsers);
+router.get('/me', getCurrentUser);
+router.get('/:userId', getUserId);
+router.patch('/me', celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
   }),
 }), updateProfile);
-router.patch('/users/me/avatar', celebrate({
+router.patch('/avatar', celebrate({
   body: Joi.object().keys({ avatar: Joi.string().required().regex(/^http/) }),
 }), updateAvatar);
 

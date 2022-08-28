@@ -1,16 +1,18 @@
 const express = require('express');
+const cookieParser = require('cookie-parser');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const { errors, celebrate, Joi } = require('celebrate');
 const { login, createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
 const error = require('./middlewares/erros');
+const { NotFoundError } = require('./errors/errors');
 
 const { PORT = 3000 } = process.env;
 const app = express();
 
 mongoose.connect('mongodb://localhost:27017/mestodb');
-
+app.use(cookieParser());
 app.use(bodyParser.json());
 
 app.post('/signup', celebrate({
@@ -30,10 +32,10 @@ app.post('/signin', celebrate({
   }).unknown(true),
 }), login);
 
-app.use('/', auth, require('./routes/users'));
-app.use('/', auth, require('./routes/cards'));
+app.use('/users', auth, require('./routes/users'));
+app.use('/cards', auth, require('./routes/cards'));
 
-app.use('/*', (req, res) => { res.status(404).send({ message: 'Произошла ошибка' }); });
+app.use('/*', () => { throw new NotFoundError('Произошла ошибка')});
 app.use(errors());
 app.use(error);
 
