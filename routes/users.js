@@ -19,7 +19,7 @@ router.patch('/me', celebrate({
   }),
 }), updateProfile);
 router.patch('/avatar', celebrate({
-  body: Joi.object().keys({ avatar: Joi.string().required().regex(/^http/) }),
+  body: Joi.object().keys({ avatar: Joi.string().required().regex(/^(ftp|http|https):\/\/[^ "]+$/) }),
 }), updateAvatar);
 
 module.exports = router;
