@@ -22,11 +22,12 @@ app.post('/signup', celebrate({
     avatar: Joi.string().regex(/^(ftp|http|https):\/\/[^ "]+$/),
   }),
 }), createUser);
+
 app.post('/signin', celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email(),
     password: Joi.string().required().min(2),
-  }),
+  }).unknown(true),
 }), login);
 
 app.use('/', auth, require('./routes/users'));
