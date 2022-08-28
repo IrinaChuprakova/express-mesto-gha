@@ -29,7 +29,7 @@ const deleteCard = (req, res, next) => {
         throw new Forbidden('Карточки может удалять только создатель');
       }
       Card.findByIdAndRemove(card)
-        .then(() => res.status(200).send(card))
+        .then(() => res.status(200).send({ card }))
         .catch(next);
     })
     .catch(next);
