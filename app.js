@@ -6,7 +6,7 @@ const { errors, celebrate, Joi } = require('celebrate');
 const { login, createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
 const error = require('./middlewares/erros');
-const { NotFoundError } = require('./errors/errors');
+const NotFoundError = require('./errors/NotFoundError');
 
 const { PORT = 3000 } = process.env;
 const app = express();
@@ -18,24 +18,24 @@ app.use(bodyParser.json());
 app.post('/signup', celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email(),
-    password: Joi.string().required().min(2),
+    password: Joi.string().required(),
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-    avatar: Joi.string().regex(/^(ftp|http|https):\/\/[^ "]+$/),
+    avatar: Joi.string().regex(/^https?:\/\/(?:www\.)?([\w-]+\.)+\/?\S*$/),
   }),
 }), createUser);
 
 app.post('/signin', celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email(),
-    password: Joi.string().required().min(2),
-  }).unknown(true),
+    password: Joi.string().required(),
+  }),
 }), login);
 
 app.use('/users', auth, require('./routes/users'));
 app.use('/cards', auth, require('./routes/cards'));
 
-app.use('/*', () => { throw new NotFoundError('Произошла ошибка'); });
+app.use('/*', auth, () => { throw new NotFoundError('Произошла ошибка'); });
 app.use(errors());
 app.use(error);
 

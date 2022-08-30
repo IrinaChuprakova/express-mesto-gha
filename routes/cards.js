@@ -19,7 +19,7 @@ router.get('/', getCards);
 router.post('/', celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
-    link: Joi.string().required().regex(/^(ftp|http|https):\/\/[^ "]+$/),
+    link: Joi.string().required().regex(/^https?:\/\/(?:www\.)?([\w-]+\.)+\/?\S*$/),
   }),
 }), createCard);
 router.delete('/:cardId', CardId, deleteCard);

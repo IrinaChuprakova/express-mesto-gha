@@ -1,7 +1,9 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
-const { BadRequest, NotFoundError, Conflict } = require('../errors/errors');
+const BadRequest = require('../errors/BadRequest');
+const Conflict = require('../errors/Conflict');
+const NotFoundError = require('../errors/NotFoundError');
 
 const login = (req, res, next) => {
   const { email, password } = req.body;
@@ -28,20 +30,20 @@ const login = (req, res, next) => {
 
 const getUsers = (req, res, next) => {
   User.find({})
-    .then((users) => res.status(200).send({ users }))
+    .then((users) => res.send({ users }))
     .catch(next);
 };
 
 const getCurrentUser = (req, res, next) => {
   User.findById(req.user._id)
-    .then((user) => res.status(200).send({ user }))
+    .then((user) => res.send({ user }))
     .catch(next);
 };
 
 const getUserId = (req, res, next) => {
   User.findById(req.params.userId)
     .orFail(() => { throw new NotFoundError('Запрашиваемый пользователь не найден'); })
-    .then((user) => res.status(200).send({ user }))
+    .then((user) => res.send({ user }))
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequest('Переданы некорректные данные пользователя'));
@@ -59,7 +61,7 @@ const createUser = (req, res, next) => {
     .then((hash) => User.create({
       name, about, avatar, email, password: hash,
     }))
-    .then((user) => res.status(200).send({
+    .then((user) => res.send({
       name: user.name,
       about: user.about,
       avatar: user.avatar,
@@ -86,7 +88,7 @@ const updateProfile = (req, res, next) => {
     { new: true, runValidators: true },
   )
     .orFail(() => { throw new NotFoundError('Пользователь с указанным id не найден'); })
-    .then((user) => res.status(200).send({ user }))
+    .then((user) => res.send({ user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequest('Переданы некорректные данные при обновлении профиля'));
@@ -103,7 +105,7 @@ const updateAvatar = (req, res, next) => {
     { new: true, runValidators: true },
   )
     .orFail(() => { throw new NotFoundError('Пользователь с указанным id не найден'); })
-    .then((user) => res.status(200).send({ user }))
+    .then((user) => res.send({ user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequest('Переданы некорректные данные при обновлении аватара'));

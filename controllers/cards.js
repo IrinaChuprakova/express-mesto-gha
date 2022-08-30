@@ -1,9 +1,11 @@
 const Card = require('../models/card');
-const { BadRequest, Forbidden, NotFoundError } = require('../errors/errors');
+const BadRequest = require('../errors/BadRequest');
+const Forbidden = require('../errors/Forbidden');
+const NotFoundError = require('../errors/NotFoundError');
 
 const getCards = (req, res, next) => {
   Card.find({})
-    .then((card) => res.status(200).send({ card }))
+    .then((card) => res.send({ card }))
     .catch(next);
 };
 
@@ -11,7 +13,7 @@ const createCard = (req, res, next) => {
   const owner = req.user._id;
   const { name, link } = req.body;
   Card.create({ name, link, owner })
-    .then((card) => res.status(200).send({ card }))
+    .then((card) => res.send({ card }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequest('Переданы некорректные данные при создании карточки'));
@@ -29,7 +31,7 @@ const deleteCard = (req, res, next) => {
         throw new Forbidden('Карточки может удалять только создатель');
       }
       Card.findByIdAndRemove(card)
-        .then(() => res.status(200).send({ card }))
+        .then(() => res.send({ card }))
         .catch(next);
     })
     .catch(next);
@@ -42,7 +44,7 @@ const cardLike = (req, res, next) => {
     { new: true },
   )
     .orFail(() => { throw new NotFoundError('Карточка с указанным id не найдена'); })
-    .then((card) => { res.status(200).send({ card }); })
+    .then((card) => { res.send({ card }); })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequest('Переданы некорректные данные при обновлении аватара'));
@@ -59,7 +61,7 @@ const cardLikeDelete = (req, res, next) => {
     { new: true },
   )
     .orFail(() => { throw new NotFoundError('Карточка с указанным id не найдена'); })
-    .then((card) => { res.status(200).send({ card }); })
+    .then((card) => { res.send({ card }); })
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequest('Переданы некорректные данные для снятия лайка'));
